@@ -1,0 +1,106 @@
+/* General table styling */
+.ant-table {
+  background-color: #ffffff; /* White background for the table */
+  color: #595959; /* Dark gray text for better readability */
+  border: 1px solid #f0f0f0; /* Light border for the table */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  overflow: hidden; /* Prevent overflow for rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a soft shadow for depth */
+}
+
+/* Container styling */
+.task-list-container {
+  background-color: #ffffff; /* White background for the container */
+  padding: 20px; /* Add padding around the table */
+  border-radius: 8px; /* Rounded corners for the container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  border: 1px solid #f0f0f0; /* Light border for a clean look */
+}
+
+/* Table header styling */
+.ant-table table thead > tr > th {
+  background-color: #474747 !important; /* Grayer background for headers */
+  color: #fff !important; /* Dark gray text for headers */
+  font-weight: 600 !important; /* Slightly bolder text for headers */
+  text-align: center !important; /* Center-align the header text */
+  border-bottom: 1px solid #e8e8e8 !important; /* Subtle border for header cells */
+  padding: 12px !important;
+}
+
+/* Table body styling */
+.ant-table-tbody > tr > td {
+  background-color: #ffffff; /* Default white background for table body */
+  color: #595959; /* Dark gray text for table body */
+  border-bottom: 1px solid #f0f0f0; /* Subtle border for body cells */
+  padding: 12px;
+}
+
+/* Alternate row coloring */
+.ant-table-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff !important; /* White background for odd rows */
+}
+
+.ant-table-tbody > tr:nth-child(even) > td {
+  background-color: #e5e3e3 !important; /* Light gray background for even rows */
+}
+
+/* Row hover effect */
+.ant-table-tbody > tr:hover > td {
+  background-color: #f5f5f5 !important; /* Slightly lighter gray background on hover */
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Pagination styling */
+.ant-table-pagination {
+  color: #e0e0e0; /* Light gray text for pagination */
+}
+
+.ant-pagination-item {
+  background-color: #ffffff; /* White background for pagination buttons */
+  border: 1px solid #d9d9d9; /* Light border for pagination buttons */
+  color: #595959; /* Dark gray text for pagination buttons */
+  border-radius: 4px;
+}
+
+.ant-pagination-item-active {
+  background-color: #1890ff; /* Blue background for active pagination button */
+  border-color: #1890ff;
+  color: #ffffff; /* White text for active button */
+}
+
+.ant-pagination-item:hover {
+  background-color: #e6f7ff; /* Light blue background on hover */
+  color: #1890ff;
+}
+
+/* Button styling */
+.ant-btn-link {
+  color: #1890ff; /* Blue text for action buttons */
+}
+
+.ant-btn-link:hover {
+  color: #40a9ff; /* Brighter blue on hover */
+  text-decoration: underline;
+}
+
+/* Tag styling */
+.ant-tag {
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 4px; /* Rounded corners for tags */
+}
+
+.ant-tag-green {
+  background-color: #f6ffed; /* Light green background */
+  color: #52c41a; /* Green text */
+}
+
+.ant-tag-orange {
+  background-color: #fff7e6; /* Light orange background */
+  color: #fa8c16; /* Orange text */
+}
+
+/* Status column styling */
+.status-column {
+  text-align: center;
+}

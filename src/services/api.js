@@ -31,6 +31,17 @@ apiClient.interceptors.response.use(
   }
 );
 
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 export const taskService = {
   getAllTasks: async () => {
     try {
@@ -41,6 +52,7 @@ export const taskService = {
       throw error;
     }
   },
+  
 
   getTaskById: async (id) => {
     try {

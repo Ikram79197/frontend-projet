@@ -1,27 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button } from "antd";
-import { PlusCircleOutlined, UnorderedListOutlined } from "@ant-design/icons"; // Import the PlusCircleOutlined and UnorderedListOutlined icons
+import { PlusCircleOutlined, ReloadOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import TaskDetail from "./components/TaskDetail";
 import TaskEditForm from "./components/TaskEditForm";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import { taskService } from "./services/api"; // Assurez-vous que ce service est correctement configuré
 import "./App.css";
 
 function App() {
-  const [view, setView] = useState("list"); // 'list', 'detail', 'edit'
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Par défaut, non authentifié
+  const [view, setView] = useState("login"); // Affiche "login" par défaut
+  const [tasks, setTasks] = useState([]); // Liste des tâches
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleTaskAdded = () => {
-    setTimeout(() => {
-      window.location.reload();
-    }, 600);
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTasks();
+    }
+  }, [isAuthenticated]);
+
+  const fetchTasks = async () => {
+    try {
+      const fetchedTasks = await taskService.getAllTasks(); // Récupère les tâches via l'API
+      setTasks(fetchedTasks);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des tâches :", error);
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
     setView("list");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    setView("login");
+  };
+
+  const handleTaskAdded = (newTask) => {
+    setTasks((prevTasks) => [...prevTasks, newTask]); // Ajoute la nouvelle tâche à la liste
     setIsModalVisible(false);
   };
 
-  const handleTaskUpdated = () => {
+  const handleTaskUpdated = (updatedTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    ); // Met à jour la tâche dans la liste
     setView("list");
   };
 
@@ -42,6 +73,19 @@ function App() {
   };
 
   const renderView = () => {
+    if (!isAuthenticated) {
+      // Affiche Login ou Register si non authentifié
+      return view === "login" ? (
+        <Login
+          onLoginSuccess={handleLoginSuccess}
+          onSwitchToRegister={() => setView("register")}
+        />
+      ) : (
+        <Register onSwitchToLogin={() => setView("login")} />
+      );
+    }
+
+    // Affiche les composants après authentification
     switch (view) {
       case "detail":
         return <TaskDetail taskId={selectedTaskId} onBack={handleBackToList} />;
@@ -57,7 +101,7 @@ function App() {
       default:
         return (
           <>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
               <Button
                 type="primary"
                 icon={<PlusCircleOutlined />}
@@ -65,8 +109,14 @@ function App() {
               >
                 Ajouter une tâche
               </Button>
+              <Button
+                type="default"
+                 onClick={fetchTasks}
+              >
+                <ReloadOutlined />
+              </Button>
             </div>
-            <TaskList onEditTask={handleEditTask} onViewTask={handleViewTask} />
+            <TaskList tasks={tasks} onEditTask={handleEditTask} onViewTask={handleViewTask} />
           </>
         );
     }
@@ -77,10 +127,15 @@ function App() {
       <header className="App-header">
         <h2>
           <span>
-            <UnorderedListOutlined /> {/* Replace the checkmark with this icon */}
+            <UnorderedListOutlined />
           </span>{" "}
           Gestionnaire de Tâches
         </h2>
+        {isAuthenticated && (
+          <Button type="link" onClick={handleLogout}>
+            Se déconnecter
+          </Button>
+        )}
       </header>
       <main>{renderView()}</main>
       <Modal

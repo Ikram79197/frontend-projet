@@ -3,7 +3,7 @@ import { Table, Button, Tag, message, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { taskService } from '../services/api';
 import TaskDetail from './TaskDetail';
-import TaskForm from './TaskForm'; // Import TaskForm
+import TaskForm from './TaskForm';
 import './TaskList.css';
 
 const TaskList = ({ onEditTask }) => {
@@ -11,8 +11,9 @@ const TaskList = ({ onEditTask }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false); 
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false); // Modal pour les détails
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false); // Modal pour l'ajout
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
 
   const fetchTasks = async () => {
@@ -32,6 +33,11 @@ const TaskList = ({ onEditTask }) => {
     fetchTasks();
   }, []);
 
+  const handleAddTask = (newTask) => {
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+    setIsAddModalVisible(false); // Ferme la modal d'ajout
+  };
+
   const handleDelete = async (id) => {
     Modal.confirm({
       title: 'Confirmation de suppression',
@@ -42,7 +48,7 @@ const TaskList = ({ onEditTask }) => {
         try {
           await taskService.deleteTask(id);
           message.success('Tâche supprimée avec succès');
-          fetchTasks();
+          setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
         } catch (error) {
           console.error('Erreur lors de la suppression:', error);
           message.error('Erreur lors de la suppression de la tâche');
@@ -53,12 +59,14 @@ const TaskList = ({ onEditTask }) => {
 
   const toggleTaskStatus = async (task) => {
     try {
-      await taskService.updateTask(task.id, {
+      const updatedTask = await taskService.updateTask(task.id, {
         ...task,
         completed: !task.completed,
       });
+      setTasks((prevTasks) =>
+        prevTasks.map((t) => (t.id === task.id ? updatedTask : t))
+      );
       message.success('Statut de la tâche mis à jour');
-      fetchTasks();
     } catch (error) {
       console.error('Erreur lors de la mise à jour du statut:', error);
       message.error('Erreur lors de la mise à jour du statut');
@@ -67,66 +75,20 @@ const TaskList = ({ onEditTask }) => {
 
   const handleViewTask = (taskId) => {
     setSelectedTaskId(taskId);
-    setIsModalVisible(true);
+    setIsDetailModalVisible(true); // Ouvre uniquement la modal de détails
   };
 
   const handleEditTask = (task) => {
-    setTaskToEdit(task); 
-    setIsEditModalVisible(true); 
+    setTaskToEdit(task);
+    setIsEditModalVisible(true);
   };
 
-  const handleTaskUpdated = () => {
-    setIsEditModalVisible(false); 
-    fetchTasks(); 
+  const handleTaskUpdated = (updatedTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+    setIsEditModalVisible(false);
   };
-
-  const columns = [
-    {
-      title: 'Titre',
-      dataIndex: 'title',
-      key: 'title',
-      render: (text, record) => (
-        <span
-          className="task-title"
-          style={{ cursor: 'pointer', color: '#1890ff' }}
-          onClick={() => handleViewTask(record.id)}
-        >
-          {text}
-        </span>
-      ),
-    },
-    {
-      title: 'Statut',
-      dataIndex: 'completed',
-      key: 'completed',
-      className: 'status-column',
-      render: (completed) => (
-        <Tag color={completed ? 'green' : 'orange'}>
-          {completed ? 'Terminé' : 'En cours'}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => handleEditTask(record)} 
-            style={{ backgroundColor: "#28a745", color: "#fff", borderColor: "#28a745" }}
-          />
-          <Button
-            type="primary"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id)}
-          />
-        </div>
-      ),
-    },
-  ];
 
   if (loading) return <div className="loading">Chargement...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -135,24 +97,83 @@ const TaskList = ({ onEditTask }) => {
     <div className="task-list-container">
       <Table
         dataSource={tasks}
-        columns={columns}
+        columns={[
+          {
+            title: 'Titre',
+            dataIndex: 'title',
+            key: 'title',
+            render: (text, record) => (
+              <span
+                className="task-title"
+                style={{ cursor: 'pointer', color: '#1890ff' }}
+                onClick={() => handleViewTask(record.id)}
+              >
+                {text}
+              </span>
+            ),
+          },
+          {
+            title: 'Statut',
+            dataIndex: 'completed',
+            key: 'completed',
+            render: (completed) => (
+              <Tag color={completed ? 'green' : 'orange'}>
+                {completed ? 'Terminé' : 'En cours'}
+              </Tag>
+            ),
+          },
+          {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEditTask(record)}
+                  style={{ backgroundColor: "#28a745", color: "#fff", borderColor: "#28a745" }}
+                />
+                <Button
+                  type="primary"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleDelete(record.id)}
+                />
+              </div>
+            ),
+          },
+        ]}
         rowKey="id"
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 3 }}
         bordered
       />
+      {/* Modal pour les détails */}
       <Modal
         title="Détails de la tâche"
-        visible={isModalVisible}
+        visible={isDetailModalVisible}
         footer={null}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={() => setIsDetailModalVisible(false)}
       >
         {selectedTaskId && (
           <TaskDetail
             taskId={selectedTaskId}
-            onBack={() => setIsModalVisible(false)}
+            onBack={() => setIsDetailModalVisible(false)}
           />
         )}
       </Modal>
+      {/* Modal pour l'ajout */}
+      <Modal
+        title="Ajouter une tâche"
+        visible={isAddModalVisible}
+        footer={null}
+        onCancel={() => setIsAddModalVisible(false)}
+      >
+        <TaskForm
+          onTaskAdded={handleAddTask}
+          onClose={() => setIsAddModalVisible(false)}
+        />
+      </Modal>
+      {/* Modal pour l'édition */}
       <Modal
         title="Modifier la tâche"
         visible={isEditModalVisible}
@@ -161,8 +182,8 @@ const TaskList = ({ onEditTask }) => {
       >
         {taskToEdit && (
           <TaskForm
-            initialTask={taskToEdit} 
-            onTaskUpdated={handleTaskUpdated} 
+            initialTask={taskToEdit}
+            onTaskUpdated={handleTaskUpdated}
             onClose={() => setIsEditModalVisible(false)}
           />
         )}

@@ -31,7 +31,7 @@ const TaskForm = ({ initialTask, onTaskAdded, onTaskUpdated, onClose }) => {
       } else {
         // Création d'une nouvelle tâche
         const newTask = await taskService.createTask({ title, completed });
-        message.success('Tâche ajoutée avec succès !');
+        message.success('Tâche ajoutée avec succès !',newTask );
         if (onTaskAdded) onTaskAdded(newTask); // Appelle la fonction pour mettre à jour la liste
       }
       onClose(); // Ferme le formulaire sans recharger la page

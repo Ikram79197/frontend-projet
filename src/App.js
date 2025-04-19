@@ -136,9 +136,9 @@ function App() {
           Gestionnaire de Tâches
         </h2>
         {isAuthenticated && (
-          <Button type="link" onClick={handleLogout}>
-            Se déconnecter
-          </Button>
+         <Button type="link" onClick={handleLogout} style={{ color: "white" }}>
+         Se déconnecter
+       </Button>
         )}
       </header>
       <main>{renderView()}</main>

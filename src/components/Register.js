@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, Input, Button, Typography, message } from 'antd';
+import { API_BASE_URL } from '../constants';
 
 const { Title, Text } = Typography;
 
@@ -18,7 +19,7 @@ const Register = ({ onSwitchToLogin }) => {
 
     setLoading(true);
     try {
-      await axios.post('http://127.0.0.1:5000/api/register', { username, password });
+      await axios.post(API_BASE_URL+"/register", { username, password });
       message.success('Inscription réussie');
       onSwitchToLogin();
     } catch (error) {

@@ -1,9 +1,12 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../constants';
 
-const API_URL = 'http://127.0.0.1:5000/api/';
+  // process.env.NODE_ENV === 'production'
+  //   ? process.env.REACT_APP_API_URL
+  //   : 'http://127.0.0.1:5000/api/';
 
 const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   }

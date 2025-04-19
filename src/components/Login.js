@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, Input, Button, Typography, message } from 'antd';
+import { API_BASE_URL } from '../constants';
 
 const { Title, Text } = Typography;
 
@@ -10,7 +11,7 @@ const Login = ({ onLoginSuccess, onSwitchToRegister }) => {
   const handleLogin = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/login', values);
+      const response = await axios.post(API_BASE_URL+"/login", values);
       localStorage.setItem('token', response.data.token); // Stocker le token
       message.success('Connexion réussie');
       onLoginSuccess();

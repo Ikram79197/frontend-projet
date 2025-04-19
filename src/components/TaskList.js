@@ -144,7 +144,7 @@ const TaskList = ({ onEditTask }) => {
           },
         ]}
         rowKey="id"
-        pagination={{ pageSize: 3 }}
+        pagination={{ pageSize: 5 }}
         bordered
       />
       {/* Modal pour les détails */}

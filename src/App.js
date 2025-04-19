@@ -19,7 +19,8 @@ function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (localStorage.getItem('token')) {
+      setIsAuthenticated(true);
       fetchTasks();
     }
   }, [isAuthenticated]);
@@ -47,6 +48,9 @@ function App() {
   const handleTaskAdded = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]); // Ajoute la nouvelle tâche à la liste
     setIsModalVisible(false);
+    setTimeout(() => {
+      window.location.reload();
+    }, 600);
   };
 
   const handleTaskUpdated = (updatedTask) => {

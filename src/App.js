@@ -11,23 +11,27 @@ import { taskService } from "./services/api";
 import "./App.css";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
-  const [view, setView] = useState("login"); 
-  const [tasks, setTasks] = useState([]); 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState(""); // Add a state for the username
+  const [view, setView] = useState("login");
+  const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
+    const token = localStorage.getItem("token");
+    const storedUsername = localStorage.getItem("username");
+    if (token) {
       setIsAuthenticated(true);
+      setUsername(storedUsername || "Utilisateur");
       fetchTasks();
     }
   }, [isAuthenticated]);
 
   const fetchTasks = async () => {
     try {
-      const fetchedTasks = await taskService.getAllTasks(); // Récupère les tâches via l'API
+      const fetchedTasks = await taskService.getAllTasks(); 
       setTasks(fetchedTasks);
     } catch (error) {
       console.error("Erreur lors de la récupération des tâches :", error);
@@ -35,14 +39,17 @@ function App() {
   };
 
   const handleLoginSuccess = (username) => {
-    localStorage.setItem("username", username);
+    localStorage.setItem("username", username); // Store the username in localStorage
+    setUsername(username); // Update the username state
     setIsAuthenticated(true);
     setView("list");
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username"); // Clear the username from localStorage
     setIsAuthenticated(false);
+    setUsername(""); // Reset the username state
     setView("login");
   };
 
@@ -129,7 +136,14 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <header
+        className="App-header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <h2>
           <span>
             <UnorderedListOutlined />
@@ -139,10 +153,12 @@ function App() {
         {isAuthenticated && (
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <UserOutlined style={{ fontSize: "18px", color: "white" }} />
-            <span style={{ color: "white" }}>{localStorage.getItem("username") || "Utilisateur"}</span>
-            <Button type="link" onClick={handleLogout} style={{ color: "white" }}>
-              Se déconnecter
-            </Button>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <span style={{ color: "white" }}>{username}</span>
+              <Button type="link" onClick={handleLogout} style={{ color: "white", padding: 0 }}>
+                Se déconnecter
+              </Button>
+            </div>
           </div>
         )}
       </header>

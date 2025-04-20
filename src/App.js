@@ -7,13 +7,13 @@ import TaskDetail from "./components/TaskDetail";
 import TaskEditForm from "./components/TaskEditForm";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import { taskService } from "./services/api"; // Assurez-vous que ce service est correctement configuré
+import { taskService } from "./services/api"; 
 import "./App.css";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Par défaut, non authentifié
-  const [view, setView] = useState("login"); // Affiche "login" par défaut
-  const [tasks, setTasks] = useState([]); // Liste des tâches
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const [view, setView] = useState("login");
+  const [tasks, setTasks] = useState([]); 
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "antd";
-import { PlusCircleOutlined, ReloadOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, ReloadOutlined, UnorderedListOutlined, UserOutlined } from "@ant-design/icons";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import TaskDetail from "./components/TaskDetail";
 import TaskEditForm from "./components/TaskEditForm";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import { taskService } from "./services/api"; // Assurez-vous que ce service est correctement configuré
+import { taskService } from "./services/api"; 
 import "./App.css";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Par défaut, non authentifié
-  const [view, setView] = useState("login"); // Affiche "login" par défaut
-  const [tasks, setTasks] = useState([]); // Liste des tâches
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const [view, setView] = useState("login"); 
+  const [tasks, setTasks] = useState([]); 
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -34,7 +34,8 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (username) => {
+    localStorage.setItem("username", username);
     setIsAuthenticated(true);
     setView("list");
   };
@@ -128,7 +129,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>
           <span>
             <UnorderedListOutlined />
@@ -136,9 +137,13 @@ function App() {
           Gestionnaire de Tâches
         </h2>
         {isAuthenticated && (
-         <Button type="link" onClick={handleLogout} style={{ color: "white" }}>
-         Se déconnecter
-       </Button>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <UserOutlined style={{ fontSize: "18px", color: "white" }} />
+            <span style={{ color: "white" }}>{localStorage.getItem("username") || "Utilisateur"}</span>
+            <Button type="link" onClick={handleLogout} style={{ color: "white" }}>
+              Se déconnecter
+            </Button>
+          </div>
         )}
       </header>
       <main>{renderView()}</main>

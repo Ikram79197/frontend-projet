@@ -1,61 +1,52 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "antd";
-import { PlusCircleOutlined, ReloadOutlined, UnorderedListOutlined, UserOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, ReloadOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import TaskDetail from "./components/TaskDetail";
 import TaskEditForm from "./components/TaskEditForm";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import { taskService } from "./services/api"; 
+import { taskService } from "./services/api"; // Assurez-vous que ce service est correctement configuré
 import "./App.css";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState(""); // Add a state for the username
-  const [view, setView] = useState("login");
-  const [tasks, setTasks] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Par défaut, non authentifié
+  const [view, setView] = useState("login"); // Affiche "login" par défaut
+  const [tasks, setTasks] = useState([]); // Liste des tâches
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (token && storedUser) {
-      const user = JSON.parse(storedUser); // Convertit la chaîne JSON en objet
+    if (localStorage.getItem('token')) {
       setIsAuthenticated(true);
-      setUsername(user.username || "Utilisateur"); // Définit le nom d'utilisateur
       fetchTasks();
     }
   }, [isAuthenticated]);
 
   const fetchTasks = async () => {
     try {
-      const fetchedTasks = await taskService.getAllTasks(); 
+      const fetchedTasks = await taskService.getAllTasks(); // Récupère les tâches via l'API
       setTasks(fetchedTasks);
     } catch (error) {
       console.error("Erreur lors de la récupération des tâches :", error);
     }
   };
 
-  const handleLoginSuccess = (user) => {
-    localStorage.setItem("user", JSON.stringify(user)); // Stocke l'objet utilisateur
-    setUsername(user.username); // Met à jour l'état local avec le nom d'utilisateur
+  const handleLoginSuccess = () => {
     setIsAuthenticated(true);
     setView("list");
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user"); // Clear the user from localStorage
     setIsAuthenticated(false);
-    setUsername(""); // Reset the username state
     setView("login");
   };
 
   const handleTaskAdded = (newTask) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]); // Ajoute la nouvelle tâche à la liste
+    setTasks((prevTasks) => [...prevTasks, newTask]); 
     setIsModalVisible(false);
     setTimeout(() => {
       window.location.reload();
@@ -137,14 +128,7 @@ function App() {
 
   return (
     <div className="App">
-      <header
-        className="App-header"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <header className="App-header">
         <h2>
           <span>
             <UnorderedListOutlined />
@@ -152,16 +136,10 @@ function App() {
           Gestionnaire de Tâches
         </h2>
         {isAuthenticated && (
-  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-    <UserOutlined style={{ fontSize: "18px", color: "white" }} />
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-      <span style={{ color: "white" }}>{username}</span>
-      <Button type="link" onClick={handleLogout} style={{ color: "white", padding: 0 }}>
-        Se déconnecter
-      </Button>
-    </div>
-  </div>
-)}
+         <Button type="link" onClick={handleLogout} style={{ color: "white" }}>
+         Se déconnecter
+       </Button>
+        )}
       </header>
       <main>{renderView()}</main>
       <Modal

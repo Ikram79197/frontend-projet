@@ -21,10 +21,11 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const storedUsername = localStorage.getItem("username");
-    if (token) {
+    const storedUser = localStorage.getItem("user");
+    if (token && storedUser) {
+      const user = JSON.parse(storedUser); // Convertit la chaîne JSON en objet
       setIsAuthenticated(true);
-      setUsername(storedUsername || "Utilisateur");
+      setUsername(user.username || "Utilisateur"); // Définit le nom d'utilisateur
       fetchTasks();
     }
   }, [isAuthenticated]);
@@ -38,16 +39,16 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = (username) => {
-    localStorage.setItem("username", username); // Store the username in localStorage
-    setUsername(username); // Update the username state
+  const handleLoginSuccess = (user) => {
+    localStorage.setItem("user", JSON.stringify(user)); // Stocke l'objet utilisateur
+    setUsername(user.username); // Met à jour l'état local avec le nom d'utilisateur
     setIsAuthenticated(true);
     setView("list");
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("username"); // Clear the username from localStorage
+    localStorage.removeItem("user"); // Clear the user from localStorage
     setIsAuthenticated(false);
     setUsername(""); // Reset the username state
     setView("login");
@@ -151,16 +152,16 @@ function App() {
           Gestionnaire de Tâches
         </h2>
         {isAuthenticated && (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <UserOutlined style={{ fontSize: "18px", color: "white" }} />
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-              <span style={{ color: "white" }}>{username}</span>
-              <Button type="link" onClick={handleLogout} style={{ color: "white", padding: 0 }}>
-                Se déconnecter
-              </Button>
-            </div>
-          </div>
-        )}
+  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    <UserOutlined style={{ fontSize: "18px", color: "white" }} />
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+      <span style={{ color: "white" }}>{username}</span>
+      <Button type="link" onClick={handleLogout} style={{ color: "white", padding: 0 }}>
+        Se déconnecter
+      </Button>
+    </div>
+  </div>
+)}
       </header>
       <main>{renderView()}</main>
       <Modal
